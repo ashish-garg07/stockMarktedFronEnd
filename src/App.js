@@ -1,26 +1,49 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+require("dotenv").config();
+
+const API_URL = process.env.API_URL;
 
 class App extends Component {
+  state = {
+    query: "",
+    results: []
+  };
+
+  handleInputChange = () => {
+    this.setState(
+      {
+        query: this.search.value
+      },
+      () => {
+        if (this.state.query && this.state.query.length > 1) {
+          if (this.state.query.length % 2 === 0) {
+            this.getInfo();
+          }
+        }
+      }
+    );
+  };
+
+  getInfo = () => {
+    console.log(`${API_URL}`);
+    fetch(`${API_URL}`).then(res => {
+      console.log(res);
+      this.setState({
+        results: res.bestMatches
+      });
+    });
+  };
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <form>
+        <input
+          placeholder="Search for..."
+          ref={input => (this.search = input)}
+          onChange={this.handleInputChange}
+        />
+        <p>{this.state.query}</p>
+        <p>{this.state.results}</p>
+      </form>
     );
   }
 }
